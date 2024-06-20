@@ -12,6 +12,10 @@
         }
         .bar {
             fill: steelblue;
+            transition: fill 0.3s ease;
+        }
+        .bar:hover {
+            fill: darkorange;
         }
         .bar text {
             fill: white;
@@ -21,7 +25,7 @@
 </head>
 <body>
     <h1>Dynamic Bar Chart with D3.js</h1>
- 
+    <!-- SVG container will be added here -->
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script>
         
@@ -31,12 +35,12 @@
         const margin = 1;
         const height = data.length * (barHeight + margin);
 
+        
         const svg = d3.select("body")
             .append("svg")
             .attr("width", width)
             .attr("height", height);
 
-      
         const xScale = d3.scaleLinear()
             .domain([d3.min(data), d3.max(data)])
             .range([50, 500]);
@@ -47,21 +51,29 @@
             .append("g")
             .attr("transform", (d, i) => `translate(0, ${i * (barHeight + margin)})`);
 
-        
         barGroups.append("rect")
             .attr("class", "bar")
-            .attr("width", d => xScale(d))
-            .attr("height", barHeight);
+            .attr("width", 0) 
+            .attr("height", barHeight)
+            .transition() 
+            .duration(1000) 
+            .attr("width", d => xScale(d)); 
 
        
         barGroups.append("text")
             .attr("x", d => xScale(d) - 5) 
             .attr("y", barHeight / 2)
             .attr("dy", ".35em")
-            .attr("text-anchor", "end") 
+            .attr("text-anchor", "end")
             .text(d => d);
 
-        console.log("Text labels added to bars.");
+        barGroups.on("mouseover", function() {
+            d3.select(this).select("rect").style("fill", "darkorange");
+        }).on("mouseout", function() {
+            d3.select(this).select("rect").style("fill", "steelblue");
+        });
+
+        console.log("Transitions and hover effects implemented for bars.");
     </script>
 </body>
 </html>
